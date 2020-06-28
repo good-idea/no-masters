@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import inquirer from 'inquirer'
 import { warn, log, exec, getCurrentBranch, branchExists } from './utils'
 import { updateRemoteDefault } from './remote'
