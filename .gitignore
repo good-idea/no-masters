@@ -1,5 +1,6 @@
 node_modules
 lib
+build
 test
 .idea/*
 build
