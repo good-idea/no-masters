@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/good-idea/no-masters/compare/v1.0.0...v1.1.0) (2020-06-28)
+
+
+### Features
+
+* **lib:** test push for version bump ([ff58921](https://github.com/good-idea/no-masters/commit/ff589210d356cafc8aaa4310144c58b7d792c71f))
+
 # 1.0.0 (2020-06-28)
 
 
