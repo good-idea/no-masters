@@ -27,4 +27,4 @@ jobs:
           branch: main
         provider: script
         skip_cleanup: true
-        script: npm run test && npm run build && npm run semantic-release && npm run test:coverage:send
+        script: npm run test && npm run build && npm run release
