@@ -1,15 +1,16 @@
 sudo: false
 language: node_js
 node_js:
-  - '10'
+  - '12'
 cache:
   directories:
     - '$HOME/.npm'
     - node_modules
 jobs:
   include:
-    - stage: test
-      script: yarn test
+    # TODO: add some tests!
+    # - stage: test
+    #   script: yarn test
     - stage: release
       if: branch = main
       node_js: lts/*
