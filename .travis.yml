@@ -23,6 +23,8 @@ jobs:
         - markdown-toc -i CONTRIBUTING.md
         - markdown-toc -i README.md
       deploy:
+        on:
+          branches: main
         provider: script
         skip_cleanup: true
         script: npm run test && npm run build && npm run semantic-release && npm run test:coverage:send
