@@ -1,0 +1,11 @@
+node_modules
+lib
+test
+.idea/*
+build
+
+coverage
+.nyc_output
+*.log
+
+.rpt2_cache/
