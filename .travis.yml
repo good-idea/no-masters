@@ -11,7 +11,7 @@ jobs:
     - stage: test
       script: yarn test
     - stage: release
-      if: branch = master
+      if: branch = main
       node_js: lts/*
       before_install: skip
       script:
