@@ -9,6 +9,9 @@
 		"release": "semantic-release",
 		"test": "echo \"No tests\""
 	},
+	"bin": {
+		"no-masters": "./lib/index.js"
+	},
 	"files": [
 		"lib"
 	],
