@@ -2,7 +2,9 @@
 
 ## No Masters
 
-A simple command line script that will rename your "master" branch to "main", and optionally:
+The word "master" has become the most-used name for a default or "root" branch. Most of us in the mostly-white development world have not questioned this, until recently. Recently, [Github has begun discussions around moving away from this term](https://www.zdnet.com/article/github-to-replace-master-with-alternative-term-to-avoid-slavery-references/).
+
+`no-masters` is a simple command line script that will rename your `master` branch to `main`, and optionally:
 
 - Delete the local `master` branch
 - Update the origin's default branch to `main`
@@ -16,10 +18,12 @@ A simple command line script that will rename your "master" branch to "main", an
 
 - Your remote must be named `origin`
 - Updating the origin only works with Github and requires [`gh`](https://cli.github.com/manual/installation) to be installed
+- If you are using CI or some kind of deployment script, it probably defaults to using the `master` branch. You may need to update your scripts or other services to look for the `main` branch instead (See an example of a travis config [right here in this repo](./.travis.yml)).
 
 ### Thanks
 
-Inspired by @laferrerra
+Inspired in part by [@laferrerra](https://www.twitter.com/laferrerra), thank you to [@sanctucompu](https://www.twitter.com/sanctucompu) for bringing it to my attention.
+
 https://www.instagram.com/p/CBn5KrMFEhA/?igshid=8sgzdo3eoba1
 
 > hello and happy juneteenth. a friendly
