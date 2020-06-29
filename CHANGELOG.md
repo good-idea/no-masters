@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/good-idea/no-masters/compare/v1.1.0...v1.1.1) (2020-06-28)
+
+
+### Bug Fixes
+
+* **lib:** add shebang for bin script ([a5c9f3e](https://github.com/good-idea/no-masters/commit/a5c9f3e1ea4de8fa08ad412495559104d545f953))
+
 # [1.1.0](https://github.com/good-idea/no-masters/compare/v1.0.0...v1.1.0) (2020-06-28)
 
 
