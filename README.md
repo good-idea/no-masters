@@ -4,6 +4,8 @@
 
 The word "master" has become the most-used name for a default or "root" branch. Most of us in the mostly-white development world have not questioned this, until recently. Recently, [Github has begun discussions around moving away from this term](https://www.zdnet.com/article/github-to-replace-master-with-alternative-term-to-avoid-slavery-references/).
 
+See also [this twitter thread](https://twitter.com/mislav/status/1270388510684598272) by [@mislav](https://twitter.com/mislav).
+
 `no-masters` is a simple command line script that will rename your `master` branch to `main`, and optionally:
 
 - Delete the local `master` branch

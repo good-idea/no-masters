@@ -1,54 +1,8 @@
 #!/usr/bin/env node
 import inquirer from 'inquirer'
-import { warn, log, exec, getCurrentBranch, branchExists } from './utils'
+import { end, log, exec, getCurrentBranch, branchExists } from './utils'
 import { updateRemoteDefault } from './remote'
-
-export function end(message: string, warning?: boolean) {
-	if (warning) {
-		warn(`⚠️  ${message}`)
-	} else {
-		log(message)
-	}
-	process.exit()
-}
-
-function successMessage() {
-	end(`
-    ✊🏿✊🏾✊🏽✊🏼✊🏻
-
-    ----------
-    No Masters
-    ----------
-
-    Inspired by @laferrerra
-    https://www.instagram.com/p/CBn5KrMFEhA/?igshid=8sgzdo3eoba1
-
-    > hello and happy juneteenth. a friendly
-    > reminder that language matters and there's
-    > no better day to change your default branch
-    > from master to main.
-
-    -------------
-
-    Please share!
-
-    \`npx no-masters\`
-
-    -------------
-
-    Bugs, enhancements, suggestions?
-    Please contribute!
-
-    https://www.github.com/good-idea/no-masters
-
-    -------------
-
-    Get in touch!
-
-    joseph@good-idea.studio
-    https://www.twitter.com/typeof_goodidea
-`)
-}
+import { successMessage } from './successMessage'
 
 async function main() {
 	/* Check for unstaged changes */
@@ -91,7 +45,7 @@ async function main() {
 		} else if (nextStep === 'updateRemote') {
 			await updateRemoteDefault()
 			successMessage()
-		} else {
+		} else if (nextStep === 'pullMaster') {
 			await exec('git', ['checkout', '-b', 'master', 'origin/master'])
 		}
 	}
@@ -106,7 +60,7 @@ async function main() {
 
 	/* Do a pull & push to make sure we are in sync with the remote */
 	log('Pulling latest changes from remote..')
-	await exec('git', ['pull'])
+	await exec('git', ['pull', 'origin', 'master'])
 	log('Successfully pulled changes.')
 	log('Pushing local changes to remote..')
 	await exec('git', ['push'])
@@ -142,7 +96,7 @@ async function main() {
 		/* Create the new local branch */
 
 		log('Creating new "main" branch..')
-		await exec('git', ['branch', '-m', 'master', 'main'])
+		await exec('git', ['checkout', '-b', 'main'])
 	}
 
 	/* Set the upstream */

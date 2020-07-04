@@ -1,8 +1,7 @@
 import inquirer from 'inquirer'
 import execa from 'execa'
 import commandExists from 'command-exists'
-import { end } from './index'
-import { log, exec } from './utils'
+import { end, log, exec } from './utils'
 
 /* Make sure `gh` is installed */
 async function confirmGH() {
