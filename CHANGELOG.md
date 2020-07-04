@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/good-idea/no-masters/compare/v1.2.0...v1.2.1) (2020-07-04)
+
+
+### Bug Fixes
+
+* **lib:** add more to success message ([79b2455](https://github.com/good-idea/no-masters/commit/79b245551bbd001ee4f4ed4afee6f871abfc697a))
+
 # [1.2.0](https://github.com/good-idea/no-masters/compare/v1.1.1...v1.2.0) (2020-07-04)
 
 
