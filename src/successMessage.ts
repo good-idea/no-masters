@@ -14,6 +14,8 @@ export function successMessage() {
 
     [] Donate to a bail fund
     [] Prompt discussions about equality and race in your workplace
+    [] Cease or protest any work for ICE, police departments, or 
+       any incarceration-focused organizations
     [] Vote
 
     -------------
