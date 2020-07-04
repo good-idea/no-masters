@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/good-idea/no-masters/compare/v1.1.1...v1.2.0) (2020-07-04)
+
+
+### Features
+
+* **lib:** fix master branch deletion ([2178c97](https://github.com/good-idea/no-masters/commit/2178c9773d22a27d998370d446f60ec9740c7d25))
+
 ## [1.1.1](https://github.com/good-idea/no-masters/compare/v1.1.0...v1.1.1) (2020-06-28)
 
 
