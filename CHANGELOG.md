@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/good-idea/no-masters/compare/v1.2.1...v1.3.0) (2020-07-05)
+
+
+### Features
+
+* **lib:** create local git template with main as default ([6b7e52b](https://github.com/good-idea/no-masters/commit/6b7e52bde0f5657d751dc7fd260a320e126c54fe))
+
 ## [1.2.1](https://github.com/good-idea/no-masters/compare/v1.2.0...v1.2.1) (2020-07-04)
 
 
