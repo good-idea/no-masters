@@ -68,9 +68,9 @@ async function main() {
 	let currentBranch = await getCurrentBranch()
 	const branchNames = await getLocalBranches()
 	const localHasMaster = branchNames.includes('master')
+	const hasRemoteOrigin = await hasRemote('origin')
 	const remoteBranchNames = await getRemoteBranchNames()
 	const remoteHasMaster = remoteBranchNames.includes('master')
-	const hasRemoteOrigin = await hasRemote('origin')
 
 	if (localHasMaster) {
 		if (currentBranch !== 'master') {
@@ -78,7 +78,7 @@ async function main() {
 			await exec('git', ['checkout', 'master'], false)
 		}
 
-		if (remoteHasMaster) {
+		if (hasRemoteOrigin && remoteHasMaster) {
 			/* Do a pull & push to make sure we are in sync with the remote */
 			log('Pulling latest changes from remote..')
 			await exec('git', ['pull', 'origin', 'master'])
@@ -146,14 +146,16 @@ async function main() {
 		}
 	}
 
-	const { updateRemote } = await inquirer.prompt({
-		type: 'confirm',
-		name: 'updateRemote',
-		message: 'Do you want to update your remote\'s default branch to "main"?',
-	})
+	if (hasRemoteOrigin) {
+		const { updateRemote } = await inquirer.prompt({
+			type: 'confirm',
+			name: 'updateRemote',
+			message: 'Do you want to update your remote\'s default branch to "main"?',
+		})
 
-	if (updateRemote === true) {
-		await updateRemoteDefault()
+		if (updateRemote === true) {
+			await updateRemoteDefault()
+		}
 	}
 
 	/* Prompt to update the user's default configuration */
@@ -171,22 +173,32 @@ async function main() {
 			false,
 			true,
 		)
-		const { stdout: HOME } = await exec('echo', ['"$HOME"'], false)
-		const templateDir =
-			existingTemplateDir || path.resolve(HOME, '.git_template/template')
-		log('Creating template..')
-		await exec('mkdir', ['-p', templateDir])
-		const headLocation = path.resolve(templateDir, 'HEAD')
-		const headExists = fs.existsSync(headLocation)
+		if (existingTemplateDir) {
+			const headLocation = path.resolve(existingTemplateDir, 'HEAD')
+			const headExists = fs.existsSync(headLocation)
 
-		if (headExists) {
-			const contents = fs.readFileSync(headLocation, 'utf-8')
-			const newContents = contents.replace(/^ref:.*$/gm, 'ref: ref/heads/main')
-			fs.writeFileSync(headLocation, newContents)
+			if (headExists) {
+				const contents = fs.readFileSync(headLocation, 'utf-8')
+				const newContents = contents.replace(
+					/^ref:.*$/gm,
+					'ref: ref/heads/main',
+				)
+				fs.writeFileSync(headLocation, newContents)
+			} else {
+				await exec('echo', ['"ref: refs/heads/main"', '>>', headLocation])
+			}
 		} else {
-			await exec('echo', ['"ref: refs/heads/main"', '>>', headLocation])
+			const { stdout: HOME } = await exec('echo', ['"$HOME"'], false)
+			const templateDir = path.resolve(HOME, '.git_template/template')
+			log('Creating template..')
+			await exec('mkdir', ['-p', templateDir])
+			await exec('cp', [
+				'-r',
+				path.resolve(__dirname, '../git-template/*'),
+				templateDir,
+			])
+			await exec('git', ['config', '--global', 'init.templateDir', templateDir])
 		}
-		await exec('git', ['config', '--global', 'init.templateDir', templateDir])
 		log(
 			'Success! Now when you create new repositories, the default branch will be "main"',
 		)

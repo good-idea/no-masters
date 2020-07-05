@@ -30,12 +30,17 @@ export async function hasRemote(name: string): Promise<boolean> {
 
 export async function getRemoteBranchNames(): Promise<string[]> {
 	await confirmGH()
-	const remoteBranches = await execa('gh', [
-		'api',
-		'repos/:owner/:repo/branches',
-	])
-	const branches = JSON.parse(remoteBranches.stdout).map((b: any) => b.name)
-	return branches
+	try {
+		const remoteBranches = await execa('gh', [
+			'api',
+			'repos/:owner/:repo/branches',
+		])
+		const branches = JSON.parse(remoteBranches.stdout).map((b: any) => b.name)
+		return branches
+	} catch (err) {
+		if (err.message.includes('no git remotes found')) return []
+		throw err
+	}
 }
 
 async function deleteRemoteMaster() {
