@@ -11,6 +11,7 @@ See also [this twitter thread](https://twitter.com/mislav/status/127038851068459
 - Delete the local `master` branch
 - Update the origin's default branch to `main`
 - Delete the origin's `master` branch
+- Update your local git config to use `main` as the default branch when using `git init`
 
 ## Usage
 
