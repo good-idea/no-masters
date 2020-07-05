@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/good-idea/no-masters/compare/v1.3.0...v1.3.1) (2020-07-05)
+
+
+### Bug Fixes
+
+* **lib:** fix git template ([1c4c88a](https://github.com/good-idea/no-masters/commit/1c4c88aad324f20eb3c74f8d5ea888d90d7157e2))
+
 # [1.3.0](https://github.com/good-idea/no-masters/compare/v1.2.1...v1.3.0) (2020-07-05)
 
 
