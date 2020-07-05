@@ -13,6 +13,31 @@ async function confirmGH() {
 	})
 }
 
+async function getRemoteInfo() {
+	await confirmGH()
+	const { stdout } = await exec('gh', ['api', 'repos/:owner/:repo'], false)
+	return JSON.parse(stdout)
+}
+
+export async function hasRemote(name: string): Promise<boolean> {
+	const { stdout: remotes } = await exec('git', ['remote', '-v'], false)
+	const remoteNames = remotes
+		.split('\n')
+		.map((s) => s.replace(/^(\w+)(.*)$/, '$1'))
+
+	return remoteNames.includes(name)
+}
+
+export async function getRemoteBranchNames(): Promise<string[]> {
+	await confirmGH()
+	const remoteBranches = await execa('gh', [
+		'api',
+		'repos/:owner/:repo/branches',
+	])
+	const branches = JSON.parse(remoteBranches.stdout).map((b: any) => b.name)
+	return branches
+}
+
 async function deleteRemoteMaster() {
 	await confirmGH()
 
@@ -35,20 +60,11 @@ async function deleteRemoteMaster() {
 	)
 }
 
-async function getRemoteInfo() {
-	await confirmGH()
-	const { stdout } = await exec('gh', ['api', 'repos/:owner/:repo'], false)
-	return JSON.parse(stdout)
-}
-
 export async function updateRemoteDefault() {
 	await confirmGH()
-	const remoteBranches = await execa('gh', [
-		'api',
-		'repos/:owner/:repo/branches',
-	])
-	const branches = JSON.parse(remoteBranches.stdout).map((b: any) => b.name)
+	const branches = await getRemoteBranchNames()
 	const includesMain = branches.includes('main')
+	const includesMaster = branches.includes('master')
 	if (!includesMain) {
 		end('You have not pushed your main branch to the origin.', true)
 	}
@@ -58,30 +74,31 @@ export async function updateRemoteDefault() {
 		['api', '-X', 'PATCH', 'repos/:owner/:repo', '-F', 'default_branch=main'],
 		false,
 	)
-
-	const { confirmDelete } = await inquirer.prompt([
-		{
-			type: 'confirm',
-			name: 'confirmDelete',
-			message:
-				'Do you want to delete your origin master branch?\nThis is potentially dangerous!\nIf you have automatic CI or deployments set up, you should handle deleting your master branch manually.',
-		},
-	])
-
-	if (confirmDelete) {
-		const { name: repoName } = await getRemoteInfo()
-
-		const { confirmName } = await inquirer.prompt([
+	if (includesMaster) {
+		const { confirmDelete } = await inquirer.prompt([
 			{
-				type: 'input',
-				name: 'confirmName',
-				message: `Enter the name of your repo '${repoName}' to continue`,
+				type: 'confirm',
+				name: 'confirmDelete',
+				message:
+					'Do you want to delete your origin master branch?\nThis is potentially dangerous!\nIf you have automatic CI or deployments set up, you should handle deleting your master branch manually.',
 			},
 		])
-		if (confirmName === repoName) {
-			await deleteRemoteMaster()
-		} else {
-			end('Error, you did not enter the correct repo name')
+
+		if (confirmDelete) {
+			const { name: repoName } = await getRemoteInfo()
+
+			const { confirmName } = await inquirer.prompt([
+				{
+					type: 'input',
+					name: 'confirmName',
+					message: `Enter the name of your repo '${repoName}' to continue`,
+				},
+			])
+			if (confirmName === repoName) {
+				await deleteRemoteMaster()
+			} else {
+				end('Error, you did not enter the correct repo name')
+			}
 		}
 	}
 }

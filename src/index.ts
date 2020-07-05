@@ -1,7 +1,16 @@
 #!/usr/bin/env node
+import path from 'path'
+import fs from 'fs'
 import inquirer from 'inquirer'
-import { end, log, exec, getCurrentBranch, branchExists } from './utils'
-import { updateRemoteDefault } from './remote'
+import {
+	end,
+	log,
+	exec,
+	getLocalBranches,
+	getCurrentBranch,
+	branchExists,
+} from './utils'
+import { hasRemote, getRemoteBranchNames, updateRemoteDefault } from './remote'
 import { successMessage } from './successMessage'
 
 async function main() {
@@ -46,25 +55,39 @@ async function main() {
 			await updateRemoteDefault()
 			successMessage()
 		} else if (nextStep === 'pullMaster') {
-			await exec('git', ['checkout', '-b', 'master', 'origin/master'])
+			const branches = await getRemoteBranchNames()
+			if (branches.includes('master')) {
+				await exec('git', ['checkout', '-b', 'master', 'origin/master'])
+			} else {
+				log('Your remote does not have a master branch. Skipping..')
+			}
 		}
 	}
 
 	/* Make sure we are on the master branch */
 	let currentBranch = await getCurrentBranch()
+	const branchNames = await getLocalBranches()
+	const localHasMaster = branchNames.includes('master')
+	const remoteBranchNames = await getRemoteBranchNames()
+	const remoteHasMaster = remoteBranchNames.includes('master')
+	const hasRemoteOrigin = await hasRemote('origin')
 
-	if (currentBranch !== 'master') {
-		log('Switching to the master branch')
-		await exec('git', ['checkout', 'master'], false)
+	if (localHasMaster) {
+		if (currentBranch !== 'master') {
+			log('Switching to the master branch')
+			await exec('git', ['checkout', 'master'], false)
+		}
+
+		if (remoteHasMaster) {
+			/* Do a pull & push to make sure we are in sync with the remote */
+			log('Pulling latest changes from remote..')
+			await exec('git', ['pull', 'origin', 'master'])
+			log('Successfully pulled changes.')
+			log('Pushing local changes to remote..')
+			await exec('git', ['push'])
+			log('Successfully pushed changes.')
+		}
 	}
-
-	/* Do a pull & push to make sure we are in sync with the remote */
-	log('Pulling latest changes from remote..')
-	await exec('git', ['pull', 'origin', 'master'])
-	log('Successfully pulled changes.')
-	log('Pushing local changes to remote..')
-	await exec('git', ['push'])
-	log('Successfully pushed changes.')
 
 	/* Check to see if there is a 'main' branch */
 	const mainExists = await branchExists('main')
@@ -78,7 +101,7 @@ async function main() {
 			false,
 		)
 		const masterIsMerged = /master/.test(gitBranchMergedMain.stdout)
-		if (!masterIsMerged) {
+		if (localHasMaster && !masterIsMerged) {
 			const { confirmMasterMerge } = await inquirer.prompt([
 				{
 					type: 'confirm',
@@ -99,24 +122,28 @@ async function main() {
 		await exec('git', ['checkout', '-b', 'main'])
 	}
 
-	/* Set the upstream */
-	log('Setting the upstream..')
-	await exec('git', ['push', '-u', 'origin', 'main'])
-	/* Update the tracking branch */
-	log('Updating the tracking branch..')
-	await exec('git', ['branch', '-u', 'origin/main', 'main'])
+	if (hasRemoteOrigin) {
+		/* Set the upstream */
+		log('Setting the upstream..')
+		await exec('git', ['push', '-u', 'origin', 'main'])
+		/* Update the tracking branch */
+		log('Updating the tracking branch..')
+		await exec('git', ['branch', '-u', 'origin/main', 'main'])
+	}
+	log('Success! You now have an up to date "main" branch.')
 
-	const { deleteMaster } = await inquirer.prompt({
-		type: 'confirm',
-		name: 'deleteMaster',
-		message:
-			'Success! You now have an up to date "main" branch. Would you like to delete your local master branch?',
-	})
-	/* End here if they do not want to delete the master branch */
-	if (deleteMaster === true) {
-		log('Deleting the local master branch..')
-		await exec('git', ['branch', '-d', 'master'])
-		log('Successfully deleted the local master branch.')
+	if (localHasMaster) {
+		const { deleteMaster } = await inquirer.prompt({
+			type: 'confirm',
+			name: 'deleteMaster',
+			message: 'Would you like to delete your local master branch?',
+		})
+		/* End here if they do not want to delete the master branch */
+		if (deleteMaster === true) {
+			log('Deleting the local master branch..')
+			await exec('git', ['branch', '-d', 'master'])
+			log('Successfully deleted the local master branch.')
+		}
 	}
 
 	const { updateRemote } = await inquirer.prompt({
@@ -128,6 +155,43 @@ async function main() {
 	if (updateRemote === true) {
 		await updateRemoteDefault()
 	}
+
+	/* Prompt to update the user's default configuration */
+	const { updateInitDefault } = await inquirer.prompt({
+		type: 'confirm',
+		name: 'updateInitDefault',
+		message:
+			'Would you like to change the name of the default branch when you run `git init`? (This will create a hidden directory in your user folder named ".git_template")',
+	})
+
+	if (updateInitDefault) {
+		const { stdout: existingTemplateDir } = await exec(
+			'git',
+			['config', '--get', 'init.templateDir'],
+			false,
+			true,
+		)
+		const { stdout: HOME } = await exec('echo', ['"$HOME"'], false)
+		const templateDir =
+			existingTemplateDir || path.resolve(HOME, '.git_template/template')
+		log('Creating template..')
+		await exec('mkdir', ['-p', templateDir])
+		const headLocation = path.resolve(templateDir, 'HEAD')
+		const headExists = fs.existsSync(headLocation)
+
+		if (headExists) {
+			const contents = fs.readFileSync(headLocation, 'utf-8')
+			const newContents = contents.replace(/^ref:.*$/gm, 'ref: ref/heads/main')
+			fs.writeFileSync(headLocation, newContents)
+		} else {
+			await exec('echo', ['"ref: refs/heads/main"', '>>', headLocation])
+		}
+		await exec('git', ['config', '--global', 'init.templateDir', templateDir])
+		log(
+			'Success! Now when you create new repositories, the default branch will be "main"',
+		)
+	}
+
 	successMessage()
 }
 
