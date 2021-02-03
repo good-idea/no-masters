@@ -66,11 +66,14 @@ async function main() {
 
 	/* Make sure we are on the master branch */
 	let currentBranch = await getCurrentBranch()
-	const branchNames = await getLocalBranches()
+	const [branchNames, hasRemoteOrigin, remoteBranchNames] = await Promise.all([
+		getLocalBranches(),
+		hasRemote('origin'),
+		getRemoteBranchNames(),
+	])
 	const localHasMaster = branchNames.includes('master')
-	const hasRemoteOrigin = await hasRemote('origin')
-	const remoteBranchNames = await getRemoteBranchNames()
 	const remoteHasMaster = remoteBranchNames.includes('master')
+	const remoteHasMain = remoteBranchNames.includes('main')
 
 	if (localHasMaster) {
 		if (currentBranch !== 'master') {
@@ -123,9 +126,11 @@ async function main() {
 	}
 
 	if (hasRemoteOrigin) {
-		/* Set the upstream */
-		log('Setting the upstream..')
-		await exec('git', ['push', '-u', 'origin', 'main'])
+		if (remoteHasMain === false) {
+			/* Set the upstream */
+			log('Setting the upstream..')
+			await exec('git', ['push', '-u', 'origin', 'main'])
+		}
 		/* Update the tracking branch */
 		log('Updating the tracking branch..')
 		await exec('git', ['branch', '-u', 'origin/main', 'main'])
