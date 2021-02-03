@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/good-idea/no-masters/compare/v1.3.1...v1.3.2) (2021-02-03)
+
+
+### Bug Fixes
+
+* **lib:** fix template directory creation' ([293f742](https://github.com/good-idea/no-masters/commit/293f742d4497d5375136d0cf51bcc2e089216e56))
+
 ## [1.3.1](https://github.com/good-idea/no-masters/compare/v1.3.0...v1.3.1) (2020-07-05)
 
 
