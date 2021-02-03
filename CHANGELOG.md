@@ -1,3 +1,10 @@
+## [1.3.3](https://github.com/good-idea/no-masters/compare/v1.3.2...v1.3.3) (2021-02-03)
+
+
+### Bug Fixes
+
+* **lib:** dummy commit to publish CI fix ([88afe58](https://github.com/good-idea/no-masters/commit/88afe58eb27f1cd58ea344caea94ba84a4baacdb))
+
 ## [1.3.2](https://github.com/good-idea/no-masters/compare/v1.3.1...v1.3.2) (2021-02-03)
 
 
