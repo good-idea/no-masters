@@ -173,20 +173,13 @@ async function main() {
 			false,
 			true,
 		)
-		if (existingTemplateDir) {
-			const headLocation = path.resolve(existingTemplateDir, 'HEAD')
-			const headExists = fs.existsSync(headLocation)
 
-			if (headExists) {
-				const contents = fs.readFileSync(headLocation, 'utf-8')
-				const newContents = contents.replace(
-					/^ref:.*$/gm,
-					'ref: ref/heads/main',
-				)
-				fs.writeFileSync(headLocation, newContents)
-			} else {
-				await exec('echo', ['"ref: refs/heads/main"', '>>', headLocation])
-			}
+		const headLocation = path.resolve(existingTemplateDir, 'HEAD')
+		const headExists = fs.existsSync(headLocation)
+		if (existingTemplateDir && headExists) {
+			const contents = fs.readFileSync(headLocation, 'utf-8')
+			const newContents = contents.replace(/^ref:.*$/gm, 'ref: ref/heads/main')
+			fs.writeFileSync(headLocation, newContents)
 		} else {
 			const { stdout: HOME } = await exec('echo', ['"$HOME"'], false)
 			const templateDir = path.resolve(HOME, '.git_template/template')

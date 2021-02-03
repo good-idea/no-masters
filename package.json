@@ -13,7 +13,8 @@
 		"no-masters": "./lib/index.js"
 	},
 	"files": [
-		"lib"
+		"lib",
+		"git-template"
 	],
 	"private": false,
 	"repository": {
