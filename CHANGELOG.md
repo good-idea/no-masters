@@ -1,3 +1,10 @@
+## [1.3.4](https://github.com/good-idea/no-masters/compare/v1.3.3...v1.3.4) (2021-02-03)
+
+
+### Bug Fixes
+
+* **lib:** don't push main if it already exists in remote ([904f7f8](https://github.com/good-idea/no-masters/commit/904f7f85bf27fd1a6e0f07ab871343818e1a7471))
+
 ## [1.3.3](https://github.com/good-idea/no-masters/compare/v1.3.2...v1.3.3) (2021-02-03)
 
 
