@@ -33,8 +33,11 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v2
 
-      - name: Install dependencies and build
+      - name: Install dependencies
         run: yarn install
+
+      - name: Build
+        run: yarn build
 
       - name: Semantic Release
         run: yarn semantic-release
