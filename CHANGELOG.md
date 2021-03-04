@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/good-idea/no-masters/compare/v1.3.4...v1.4.0) (2021-03-04)
+
+
+### Features
+
+* **lib:** better command for setting initial repo branch ([84ad21b](https://github.com/good-idea/no-masters/commit/84ad21bfc7a162dc46bb4dcd50243f3ba824e16a))
+
 ## [1.3.4](https://github.com/good-idea/no-masters/compare/v1.3.3...v1.3.4) (2021-02-03)
 
 
