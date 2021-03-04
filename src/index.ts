@@ -1,6 +1,3 @@
-#!/usr/bin/env node
-import path from 'path'
-import fs from 'fs'
 import inquirer from 'inquirer'
 import {
 	end,
@@ -13,7 +10,7 @@ import {
 import { hasRemote, getRemoteBranchNames, updateRemoteDefault } from './remote'
 import { successMessage } from './successMessage'
 
-async function main() {
+export async function main() {
 	/* Check for unstaged changes */
 	const { stdout: gitStatus } = await exec('git', ['status', '-s'], false)
 	if (gitStatus.length > 0) {
@@ -172,31 +169,8 @@ async function main() {
 	})
 
 	if (updateInitDefault) {
-		const { stdout: existingTemplateDir } = await exec(
-			'git',
-			['config', '--get', 'init.templateDir'],
-			false,
-			true,
-		)
+		await exec('git', ['config', '--global', 'init.defaultBranch', 'main'])
 
-		const headLocation = path.resolve(existingTemplateDir, 'HEAD')
-		const headExists = fs.existsSync(headLocation)
-		if (existingTemplateDir && headExists) {
-			const contents = fs.readFileSync(headLocation, 'utf-8')
-			const newContents = contents.replace(/^ref:.*$/gm, 'ref: ref/heads/main')
-			fs.writeFileSync(headLocation, newContents)
-		} else {
-			const { stdout: HOME } = await exec('echo', ['"$HOME"'], false)
-			const templateDir = path.resolve(HOME, '.git_template/template')
-			log('Creating template..')
-			await exec('mkdir', ['-p', templateDir])
-			await exec('cp', [
-				'-r',
-				path.resolve(__dirname, '../git-template/*'),
-				templateDir,
-			])
-			await exec('git', ['config', '--global', 'init.templateDir', templateDir])
-		}
 		log(
 			'Success! Now when you create new repositories, the default branch will be "main"',
 		)
@@ -204,5 +178,3 @@ async function main() {
 
 	successMessage()
 }
-
-main()

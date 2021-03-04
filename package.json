@@ -10,7 +10,7 @@
 		"test": "echo \"No tests\""
 	},
 	"bin": {
-		"no-masters": "./lib/index.js"
+		"no-masters": "./lib/bin.js"
 	},
 	"files": [
 		"git-template",
